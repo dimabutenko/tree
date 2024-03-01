@@ -9,10 +9,12 @@ public class TreesContext : DbContext
     public TreesContext(DbContextOptions options) : base(options) { }
 
     public DbSet<TreeNodeEntity> TreeNodes { get; init; } = null!;
+    public DbSet<LogEntity> Logs { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new TreeNodeEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new LogEntityConfiguration());
     }
 }

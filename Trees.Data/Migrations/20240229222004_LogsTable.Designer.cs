@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Trees.Data;
@@ -11,9 +12,11 @@ using Trees.Data;
 namespace Trees.Data.Migrations
 {
     [DbContext(typeof(TreesContext))]
-    partial class TreesContextModelSnapshot : ModelSnapshot
+    [Migration("20240229222004_LogsTable")]
+    partial class LogsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

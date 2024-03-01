@@ -64,7 +64,7 @@ public class TreesService : ITreesService
         }
         catch (InvalidOperationException exception)
         {
-            throw new TreeNodeException($"Node with Id = {id} was not found", exception);
+            throw new SecureException($"Node with Id = {id} was not found", exception);
         }
     }
 
@@ -76,6 +76,11 @@ public class TreesService : ITreesService
         {
             await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
+            if (!await context.TreeNodes.AnyAsync(x => x.Id == editModel.ParentId, cancellationToken))
+            {
+                throw new SecureException($"The parent node with Id = {editModel.ParentId} was not found");
+            }
+
             var entity = new TreeNodeEntity { Name = editModel.Name, ParentId = editModel.ParentId };
             context.TreeNodes.Add(entity);
             await context.SaveChangesAsync(cancellationToken);
@@ -84,7 +89,7 @@ public class TreesService : ITreesService
         }
         catch (DbUpdateException exception)
         {
-            throw new DatabaseUpdateException("An error is encountered while inserting new node to the database", exception);
+            throw new SecureException("An error is encountered while inserting new node to the database", exception);
         }
     }
 
@@ -102,11 +107,11 @@ public class TreesService : ITreesService
         }
         catch (InvalidOperationException exception)
         {
-            throw new TreeNodeException($"Node with Id = {id} was not found", exception);
+            throw new SecureException($"Node with Id = {id} was not found", exception);
         }
         catch (DbUpdateException exception)
         {
-            throw new DatabaseUpdateException($"An error is encountered while updating node with Id = {id} in the database", exception);
+            throw new SecureException($"An error is encountered while updating node with Id = {id} in the database", exception);
         }
     }
 
@@ -114,11 +119,12 @@ public class TreesService : ITreesService
     {
         try
         {
+            await Task.Delay(10000, cancellationToken);
             await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
             if (await context.TreeNodes.AnyAsync(x => x.ParentId == id, cancellationToken: cancellationToken))
             {
-                throw new TreeNodeException($"You have to delete all children nodes first for the parent node with Id = {id}");
+                throw new SecureException($"You have to delete all children nodes first for the parent node with Id = {id}");
             }
 
             var entity = await context.TreeNodes.SingleAsync(x => x.Id == id, cancellationToken);
@@ -127,11 +133,11 @@ public class TreesService : ITreesService
         }
         catch (InvalidOperationException exception)
         {
-            throw new TreeNodeException($"Node with Id = {id} was not found", exception);
+            throw new SecureException($"Node with Id = {id} was not found", exception);
         }
         catch (DbUpdateException exception)
         {
-            throw new DatabaseUpdateException($"An error is encountered while deleting the node with Id = {id} from the database", exception);
+            throw new SecureException($"An error is encountered while deleting the node with Id = {id} from the database", exception);
         }
     }
 
